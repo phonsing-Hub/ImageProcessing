@@ -1,0 +1,32 @@
+# Python virtual environment
+venv/
+yolov8-face-recognition-env/
+
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# YOLOv8 weights and large model files
+*.pt
+
+# Face Recognition dependencies
+*.dat
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDE settings (e.g. VSCode)
+.vscode/
+.idea/
+p.jpg
