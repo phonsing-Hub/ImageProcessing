@@ -52,7 +52,7 @@ class Facerec:
             if len(encodings) > 0:
                 # Calculate the average encoding for this person
                 avg_encoding = np.mean(encodings, axis=0)  # Average across all encodings
-                print(f"images encoding Average: {avg_encoding} ")
+                # print(f"images encoding Average: {avg_encoding} ")
                 self.known_face_encodings.append(avg_encoding)
                 self.known_face_names.append(person_folder)  # Use the folder name as the person's name
             else:
@@ -96,51 +96,3 @@ class Facerec:
         face_locations = np.array(face_locations)
         face_locations = face_locations / self.frame_resizing
         return face_locations.astype(int), face_names
-
-
-    # def load_encoding_images(self, images_path):
-    #     """
-    #     Load encoding images from path
-    #     :param images_path: path to the folder containing subfolders of persons
-    #     :return:
-    #     """
-    #     # List all subfolders in the images_path (each subfolder corresponds to one person)
-    #     persons_folders = [
-    #         f for f in os.listdir(images_path)
-    #         if os.path.isdir(os.path.join(images_path, f))
-    #     ]
-
-    #     for person_folder in persons_folders:
-    #         person_path = os.path.join(images_path, person_folder)
-
-    #         # Load all image files from the person's folder
-    #         image_files = glob.glob(os.path.join(person_path, "*.*"))
-
-    #         print(f"{len(image_files)} encoding images found for {person_folder}.")
-
-    #         encodings = []  # To store all encodings for this person
-
-    #         # Store image encodings and names for each person
-    #         for img_path in image_files:
-    #             img = cv2.imread(img_path)
-    #             rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-    #             # Get encoding
-    #             img_encoding = face_recognition.face_encodings(rgb_img)
-    #             if len(img_encoding) > 0:  # Check if there's a face found in the image
-    #                 print(f"{img_path} images encoding:")
-    #                 print(f"[{img_encoding}]")
-    #                 encodings.append(img_encoding[0])  # Append the encoding for averaging
-    #             else:
-    #                 print(f"No face found in {img_path}")
-
-    #         if len(encodings) > 0:
-    #             # Calculate the average encoding for this person
-    #             avg_encoding = np.mean(encodings, axis=0)  # Average across all encodings
-    #             print(f"images encoding Average: {avg_encoding} ")
-    #             self.known_face_encodings.append(avg_encoding)
-    #             self.known_face_names.append(person_folder)  # Use the folder name as the person's name
-    #         else:
-    #             print(f"No valid encodings found for {person_folder}")
-
-    #     print("Encoding images loaded")
