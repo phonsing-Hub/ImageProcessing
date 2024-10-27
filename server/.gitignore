@@ -1,6 +1,6 @@
 # Python virtual environment
 venv/
-
+/images/
 # Python specific
 __pycache__/
 *.pyc
@@ -23,6 +23,7 @@ __pycache__/
 
 # Operating system files
 .DS_Store
+./.DS_Store
 Thumbs.db
 
 # IDE settings (e.g. VSCode)
