@@ -22,7 +22,7 @@ __pycache__/
 *.dat
 
 # Operating system files
-./.DS_Store
+.DS_Store
 Thumbs.db
 
 # IDE settings (e.g. VSCode)
