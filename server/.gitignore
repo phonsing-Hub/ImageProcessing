@@ -1,6 +1,5 @@
 # Python virtual environment
 venv/
-yolov8-face-recognition-env/
 
 # Python specific
 __pycache__/
@@ -23,7 +22,7 @@ __pycache__/
 *.dat
 
 # Operating system files
-.DS_Store
+./.DS_Store
 Thumbs.db
 
 # IDE settings (e.g. VSCode)

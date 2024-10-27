@@ -64,7 +64,6 @@
     @apply bg-background text-foreground;
   }
 }
-
-.Home{
- min-height: calc(100vh - 64px);
+.Root{
+ min-height: calc(100vh - 66px);
 }
