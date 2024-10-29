@@ -1,10 +1,11 @@
 import cv2
 from lib.face import Facerec
-
 from lib.pahoMqtt import PahoMQTT
+from db.db import execute_query  # นำเข้าฟังก์ชัน execute_query จาก db.py
+import json
+
 face = Facerec()
 paho = PahoMQTT()
-
 
 class OpenStreaming:
     def __init__(self):
@@ -12,9 +13,15 @@ class OpenStreaming:
         self.target_height = 720
         self.led1_status = -1
         self.led2_status = -1
-        paho.connect_mqtt()
-        # face.load_encoding_images("images")
-
+        #paho.connect_mqtt()
+        select_query = "SELECT * FROM CPE422.users"
+        result = execute_query(select_query)
+        for data in result:
+            if "image_encoding" in data and data["image_encoding"]:
+                data["image_encoding"] = json.loads(data["image_encoding"])
+                face.known_face_encodings.append(data["image_encoding"])
+                face.known_face_names.append(data["name"])
+            
     def generate_video_stream(self):
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():

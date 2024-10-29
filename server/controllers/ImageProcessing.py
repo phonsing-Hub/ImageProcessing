@@ -12,16 +12,14 @@ class Img:
         self.timestamp = ""
 
     async def save(self, images: List[UploadFile]):
-        for image in images:
-            # Generate a timestamped filename
-            self.timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S:%f")
+        for index, image in enumerate(images):
             extension = Path(image.filename).suffix
-            new_filename = f"{self.timestamp}{extension}"
+            new_filename = f"img{index}{extension}"
             image_path = self.user_dir / new_filename
-            
-            # Save the file
+
+            content = await image.read()
             with open(image_path, "wb") as f:
-                content = await image.read()
                 f.write(content)
-            
+
             self.saved_files.append(new_filename)
+            

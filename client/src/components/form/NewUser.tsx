@@ -1,18 +1,14 @@
 import React, { useState } from "react";
-import { Button, Modal, Upload, message } from "antd";
-import type { UploadFile, UploadProps } from "antd";
+import { Button, Modal, Upload, Form, Input, message } from "antd";
+import type { UploadFile } from "antd";
 import { Image } from "@nextui-org/react";
 import axios from "axios";
 
-const NewUser: React.FC = () => {
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+const NewUser: React.FC<ComponentProps> = ({ onClose }) => {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isloading, setIsloading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-
-  const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-  };
 
   const handlePreview = async (file: UploadFile) => {
     let src = file.url as string;
@@ -27,54 +23,111 @@ const NewUser: React.FC = () => {
     setPreviewVisible(true);
   };
 
-  const handleUpload = async () => {
-    //console.log(fileList);
-    const formData = new FormData();
-    fileList.forEach((file) => {
-      if (file.originFileObj) {
-        //console.log(file.originFileObj);
-        formData.append("images", file.originFileObj); // Use originFileObj for upload
-      }
-    });
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/upload",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      if (response.status === 201) {
-        messageApi.open({
-          type: "success",
-          content: "Image uploaded successfully!",
-        });
-        setFileList([]);
-      }
-    } catch (error) {
+  const beforeUpload = (file: File) => {
+    const isValidType = file.type === "image/png" || file.type === "image/jpeg"; // Adjusted for "image/jpeg"
+    if (!isValidType) {
       messageApi.open({
         type: "error",
-        content: "Failed to upload image.",
+        content: `${file.name} is not a png file`,
       });
-      console.error(error); // Log the error for debugging
+      return Upload.LIST_IGNORE;
+    }
+    return false;
+  };
+
+  const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
+  };
+
+  const onFinish = async (values: any) => {
+    setIsloading(true);
+    const formData = new FormData();
+    if (values.user) {
+      formData.append("name", values.user.name);
+      formData.append("note", values.user.note || "");
+    }
+    values.upload.forEach((file: UploadFile) => {
+      if (file.originFileObj) {
+        formData.append("images", file.originFileObj);
+      }
+    });
+
+    // for (let [key, value] of formData.entries()) {
+    //   if (value instanceof File) {
+    //     console.log(`${key}: ${value.name} (${value.size} bytes)`);
+    //   } else {
+    //     console.log(`${key}: ${value}`);
+    //   }
+    // }
+
+    try {
+      const res = await axios.post("http://localhost:8000/api/v1/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (res.status === 201){
+        await messageApi.open({
+          type: "success",
+          content: "Image uploaded successfully!",
+          duration: 1,
+        });
+        setIsloading(false);
+        onClose();
+      }
+    } catch (error) {
+      setIsloading(false);
+      console.log(error);
     }
   };
 
   return (
     <>
       {contextHolder}
-      <Upload
-        listType="picture-card"
-        fileList={fileList}
-        multiple={true}
-        onChange={onChange}
-        onPreview={handlePreview}
-        beforeUpload={() => false}
+      <Form
+        {...layout}
+        name="nest-messages"
+        onFinish={onFinish}
+        style={{ maxWidth: 600 }}
+        validateMessages={validateMessages}
       >
-        {fileList.length < 5 && "+ Upload"}
-      </Upload>
+        <Form.Item
+          name={["user", "name"]}
+          label="Name"
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item name={["user", "note"]} label="Note">
+          <Input.TextArea />
+        </Form.Item>
+        <Form.Item
+          name="upload"
+          label="Images"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
+          extra=".jpg .jpeg .png"
+          rules={[{ required: true }]}
+        >
+          <Upload
+            name="logo"
+            listType="picture"
+            multiple={true}
+            beforeUpload={beforeUpload}
+            onPreview={handlePreview}
+          >
+            <Button>Click to upload</Button>
+          </Upload>
+        </Form.Item>
+        <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 4 }}>
+          <Button type="primary" htmlType="submit" className="mt-4" loading={isloading}>
+            Start encoding images.
+          </Button>
+        </Form.Item>
+      </Form>
       <Modal
         open={previewVisible}
         title="Image Preview"
@@ -84,16 +137,28 @@ const NewUser: React.FC = () => {
       >
         <Image alt="Cropped Preview" isZoomed src={previewImage || ""} />
       </Modal>
-      <Button
-        type="primary"
-        onClick={handleUpload}
-        disabled={fileList.length === 0}
-        style={{ marginTop: 16 }}
-      >
-        Upload Cropped Image
-      </Button>
     </>
   );
 };
 
 export default NewUser;
+
+interface ComponentProps {
+  onClose: () => void;
+}
+
+const layout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 16 },
+};
+
+const validateMessages = {
+  required: "${label} is required!",
+  types: {
+    email: "${label} is not a valid email!",
+    number: "${label} is not a valid number!",
+  },
+  number: {
+    range: "${label} must be between ${min} and ${max}",
+  },
+};

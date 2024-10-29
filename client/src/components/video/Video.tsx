@@ -4,7 +4,7 @@ function Video() {
     <div className="relative">
     <HeroVideoDialog
       animationStyle="from-bottom"
-      videoSrc="http://localhost:8000/video"
+      videoSrc="http://localhost:8000/api/v1/video"
       thumbnailSrc="./bg.png"
       thumbnailAlt="Hero Video"
     />

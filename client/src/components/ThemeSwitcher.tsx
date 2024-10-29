@@ -23,7 +23,6 @@ export function ThemeSwitcher() {
         onChange={handleThemeChange}
         value={theme}
       >
-        <option value="system">System</option>
         <option value="dark">Dark</option>
         <option value="light">Light</option>
       </select>

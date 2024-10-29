@@ -1,7 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 
-# ฟังก์ชันสำหรับสร้างการเชื่อมต่อ
+
 def create_connection():
     try:
         cnx = mysql.connector.connect(
@@ -9,28 +9,34 @@ def create_connection():
             port=3306,
             user="root",
             password="apl@992132",
-            database="CPE422"
+            database="CPE422",
         )
         return cnx
     except Error as e:
         print(f"Error: {e}")
         return None
 
-# ฟังก์ชันสำหรับการ query
 def execute_query(query, params=None):
     cnx = create_connection()
     if cnx is None:
         return None
 
     try:
-        cur = cnx.cursor()
+        cur = cnx.cursor(dictionary=True)
         cur.execute(query, params)
-        cnx.commit()  # สำหรับ query ที่มีการเปลี่ยนแปลงข้อมูล
-        return cur.fetchall()  # สำหรับ query ที่เลือกข้อมูล
+        
+        # Ensure all results are fetched before closing
+        result = cur.fetchall()  # Fetches all rows in case there's any unread data
+        cnx.commit()
+        return result
+    
     except Error as e:
         print(f"Error: {e}")
         return None
+    
     finally:
-        if cnx.is_connected():
+        if cur:
             cur.close()
+        if cnx.is_connected():
             cnx.close()
+
