@@ -1,11 +1,18 @@
 # Image Processing System
 
- Built using:
+ Server Built using:
+- Python
 - Open CV
 - Face Recognition
 - Fast API
 - My SQL
+
+Client Built using:
+- TypeScript
 - React
+- Ant Design
+- Next UI
+- Tailwind css
 
 # License
 
